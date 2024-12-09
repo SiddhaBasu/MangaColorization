@@ -59,16 +59,12 @@ for manga in coloredMangas:
 
 
 for mangaIndex in range(len(mangas)):
-    modes = ["grayscale", "color"]
-    pageCounts = {"grayscale" : [], "color" : []}
-    matchingPageCounts = []
-
     for mode in modes:
         manga = mangas[mangaIndex] if mode == "grayscale" else coloredMangas[mangaIndex]
         for chapterNumber in range(3, 11): # CHAPTER
             
-            if not (chapterNumber >= 9 and manga == "Hunter-x-Hunter-Color"):
-                continue
+            #if not (chapterNumber >= 9 and manga == "Hunter-x-Hunter-Color"):
+           #     continue
 
             url = f"https://manga4life.com/read-online/{manga}-chapter-{chapterNumber}.html"
             response = requests.get(url)
@@ -77,8 +73,6 @@ for mangaIndex in range(len(mangas)):
             jsCode = soup.find_all("script")[-1].string
 
             chapter, page, directory, pathName = parseSiteScript(jsCode)
-
-            pageCounts[mode].append(page)
 
             print(f"Downloading {manga}: Chapter {chapterNumber}...")
 
@@ -89,9 +83,3 @@ for mangaIndex in range(len(mangas)):
                 url = f"https://{pathName}/manga/{manga}/{'' if directory == '' else directory+'/'}{chapter}-{pageString}.png"
 
                 downloadImage(url, mode, manga, chapterNumber, index)
-
-    for chapterIndex in range(len(pageCounts["color"])):
-        matchingPageCounts.append("Yes" if pageCounts["color"][chapterIndex] == pageCounts["grayscale"][chapterIndex] else "No")
-    
-    with open("MatchingPages.txt", "a") as f:
-        f.write(f"{mangas[mangaIndex]}: {matchingPageCounts}\n")
